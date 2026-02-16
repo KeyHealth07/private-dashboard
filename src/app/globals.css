@@ -226,6 +226,29 @@ button:hover {
   color: white;
 }
 
+.omega-home {
+  height: 100vh;
+  background: radial-gradient(circle at center, #111 0%, #000 70%);
+  color: #00ffcc;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 40px;
+}
+
+.omega-home h1 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+}
+
+.error {
+  color: red;
+  margin: 10px 0;
+}
+
 
 @keyframes spin {
   to { transform: rotate(360deg); }

@@ -121,18 +121,20 @@ export default function Home() {
       <div className="card">
         <h1>
           {isStandalone
-            ? "Welcome to the Dashboard Ms. KeyHealth"
+            ? "Welcome,Ms. KeyHealth"
             : "Private Dashboard"}
         </h1>
 
         <p className="subtitle">
           {isStandalone
-            ? "This installed device requires Omega-level authorization."
+            ? "Your Swiss-standard private environment is now active."
             : "A discreet Swiss wealth office infrastructure consolidating private banking, strategic holdings and global asset management within a secured and confidential environment."}
         </p>
 
         <div className="security">
-          SWISS PRIVATE STANDARD • CONFIDENTIAL ACCESS • 256-BIT ENCRYPTION
+          {isStandalone
+            ? "Restricted • Encrypted • Confidential"
+            : "SWISS PRIVATE STANDARD • CONFIDENTIAL ACCESS • 256-BIT ENCRYPTION" }
         </div>
 
         <input

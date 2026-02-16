@@ -8,6 +8,8 @@ export default function Home() {
   const [installing, setInstalling] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
+  const [showInstallOverlay, setShowInstallOverlay] = useState(false);
+
 
   const correctCode = "PD-ELITE-2026";
 
@@ -57,8 +59,7 @@ export default function Home() {
             setRedirecting(true);
 
             setTimeout(() => {
-              window.location.href =
-                "https://apps.apple.com/app/";
+             setShowInstallOverlay(true);
             }, 2000);
           } else {
             setShowFallback(true);
@@ -134,6 +135,22 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {showInstallOverlay && (
+  <div className="install-overlay">
+    <div className="install-card">
+      <h2>Install Secure Node</h2>
+      <p>
+        Tap the Share button in Safari and select
+        <strong> "Add to Home Screen"</strong>
+      </p>
+      <button onClick={() => setShowInstallOverlay(false)}>
+        Continue
+      </button>
+    </div>
+  </div>
+)}
+
 
       <footer className="footer">
         <span>CONFIDENTIAL</span> — This platform is restricted to accredited

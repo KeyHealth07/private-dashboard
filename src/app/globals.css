@@ -204,6 +204,29 @@ button:hover {
   animation: spin 1s linear infinite;
 }
 
+.install-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.install-card {
+  background: #111;
+  border: 1px solid #d4af37;
+  padding: 40px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  border-radius: 16px;
+  color: white;
+}
+
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }

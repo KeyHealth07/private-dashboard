@@ -121,7 +121,7 @@ export default function Home() {
       <div className="card">
         <h1>
           {isStandalone
-            ? "Omega Vault Authorization"
+            ? "Welcome to the Dashboard Ms. KeyHealth"
             : "Private Dashboard"}
         </h1>
 
@@ -139,7 +139,7 @@ export default function Home() {
           type="password"
           placeholder={
             isStandalone
-              ? "ENTER OMEGA AUTHORIZATION KEY"
+              ? "ENTER AUTHORIZATION KEY"
               : "ENTER PRIVATE ACCESS CODE"
           }
           value={code}

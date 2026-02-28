@@ -1,63 +1,58 @@
 "use client";
-import { useEffect, useState } from "react";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
+  const [mode, setMode] = useState<"browser" | "standalone">("browser");
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("");
   const [installing, setInstalling] = useState(false);
-  const [redirecting, setRedirecting] = useState(false);
-  const [showFallback, setShowFallback] = useState(false);
-  const [showInstallOverlay, setShowInstallOverlay] = useState(false);
-  const [isStandalone, setIsStandalone] = useState(false);
-  const [authorized, setAuthorized] = useState(false);
 
   const browserKey = "PD-ELITE-2026";
-  const installedKey = "PD-OMEGA-VAULT-77";
 
-  useEffect(() => {
-    const standalone =
-      window.matchMedia("(display-mode: standalone)").matches ||
-      (window.navigator as any).standalone === true;
-
-    setIsStandalone(standalone);
-  }, []);
-
-  const isIOS = () => {
-    return (
-      (navigator as any).userAgentData?.platform === "iOS" ||
-      /iPad|iPhone|iPod/.test(navigator.userAgent)
-    );
-  };
+  /* ===========================
+     VALIDATION
+  ============================ */
 
   const validateAccess = () => {
     setError("");
 
-    if (isStandalone) {
-      if (code === installedKey) {
-        setAuthorized(true);
-      } else {
-        setError("Invalid Omega Authorization Key.");
-      }
-    } else {
+    if (!code.trim()) {
+      setError("Authorization key required.");
+      return;
+    }
+
+    if (mode === "browser") {
       if (code === browserKey) {
-        startInstall();
+        startInstall("standalone"); // move to standalone
       } else {
         setError("ACCESS DENIED — Attempt Logged");
       }
+    } else {
+      // Standalone mode → ANY key works
+      startInstall("dashboard");
     }
   };
 
-  const startInstall = () => {
+  /* ===========================
+     INSTALL ANIMATION
+  ============================ */
+
+  const startInstall = (nextStep: "standalone" | "dashboard") => {
     setInstalling(true);
+    setProgress(0);
 
     const steps = [
       "Verifying client credentials...",
       "Establishing Swiss secure node...",
       "Securing asset modules...",
       "Preparing wealth infrastructure...",
-      "Installation complete — Launching Private Dashboard...",
+      "Installation complete...",
     ];
 
     let width = 0;
@@ -76,73 +71,51 @@ export default function Home() {
         clearInterval(interval);
 
         setTimeout(() => {
-          if (isIOS()) {
-            setRedirecting(true);
+          setInstalling(false);
+          setCode("");
+          setProgress(0);
 
-            setTimeout(() => {
-              setShowInstallOverlay(true);
-            }, 2000);
+          if (nextStep === "standalone") {
+            setMode("standalone"); // move to 2nd screen
           } else {
-            setShowFallback(true);
+            router.push("/dashboard"); // final destination
           }
         }, 1200);
       }
-    }, 1200);
+    }, 1000);
   };
 
   /* ===========================
-     INSTALLED APP AUTHORIZED VIEW
-  ============================ */
-
-  if (isStandalone && authorized) {
-    return (
-      <main className="omega-home">
-        <h1>Welcome to the Dashboard Ms. KeyHealth</h1>
-        <p>
-          This device has been registered under Omega Security Clearance.
-        </p>
-        <p>
-          All communications are encrypted and routed through secure Swiss
-          private banking infrastructure.
-        </p>
-        <p>Omega Vault Access Confirmed.</p>
-      </main>
-    );
-  }
-
-  /* ===========================
-     DEFAULT VIEW
+     UI
   ============================ */
 
   return (
     <main className="main">
-      <div className="skyline" />
-
       <div className="card">
         <h1>
-          {isStandalone
-            ? "Welcome,Ms. KeyHealth"
-            : "Private Dashboard"}
+          {mode === "browser"
+            ? "Private Dashboard"
+            : "Omega Authorization Required"}
         </h1>
 
         <p className="subtitle">
-          {isStandalone
-            ? "Your Swiss-standard private environment is now active."
-            : "A discreet Swiss wealth office infrastructure consolidating private banking, strategic holdings and global asset management within a secured and confidential environment."}
+          {mode === "browser"
+            ? "Swiss wealth infrastructure access portal."
+            : "Standalone Secure Environment Activated."}
         </p>
 
         <div className="security">
-          {isStandalone
-            ? "Restricted • Encrypted • Confidential"
-            : "SWISS PRIVATE STANDARD • CONFIDENTIAL ACCESS • 256-BIT ENCRYPTION" }
+          {mode === "browser"
+            ? "SWISS PRIVATE STANDARD • 256-BIT ENCRYPTION"
+            : "OMEGA NODE • RESTRICTED • CONFIDENTIAL"}
         </div>
 
         <input
           type="password"
           placeholder={
-            isStandalone
-              ? "ENTER AUTHORIZATION KEY"
-              : "ENTER PRIVATE ACCESS CODE"
+            mode === "browser"
+              ? "ENTER PRIVATE ACCESS CODE"
+              : "ENTER AUTHORIZATION KEY"
           }
           value={code}
           onChange={(e) => setCode(e.target.value)}
@@ -151,9 +124,9 @@ export default function Home() {
         {error && <div className="error">{error}</div>}
 
         <button onClick={validateAccess}>
-          {isStandalone
-            ? "Authorize Omega Access"
-            : "Proceed to Secure Installer"}
+          {mode === "browser"
+            ? "Proceed to Secure Installer"
+            : "Authorize Omega Access"}
         </button>
 
         {installing && (
@@ -169,50 +142,8 @@ export default function Home() {
         )}
       </div>
 
-      {redirecting && (
-        <div className="overlay">
-          <div className="overlay-content">
-            <div className="spinner" />
-            <h2>Preparing Installation…</h2>
-            <p>Please wait.</p>
-          </div>
-        </div>
-      )}
-
-      {showFallback && (
-        <div className="overlay">
-          <div className="overlay-content">
-            <h2>iOS Device Required</h2>
-            <p>
-              This application is currently available via Home Screen
-              installation.
-            </p>
-            <button onClick={() => setShowFallback(false)}>
-              Return
-            </button>
-          </div>
-        </div>
-      )}
-
-      {showInstallOverlay && (
-        <div className="install-overlay">
-          <div className="install-card">
-            <h2>Install Secure Node</h2>
-            <p>
-              Tap the Share button in Safari and select
-              <strong> "Add to Home Screen"</strong>
-            </p>
-            <button onClick={() => setShowInstallOverlay(false)}>
-              Continue
-            </button>
-          </div>
-        </div>
-      )}
-
       <footer className="footer">
-        <span>CONFIDENTIAL</span> — This platform is restricted to accredited
-        clients. Unauthorized access, duplication or distribution is strictly
-        prohibited. © 2026 Private Dashboard.
+        CONFIDENTIAL — Accredited Clients Only © 2026 Private Dashboard
       </footer>
     </main>
   );

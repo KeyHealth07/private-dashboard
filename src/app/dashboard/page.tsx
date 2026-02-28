@@ -18,7 +18,7 @@ type Transaction = {
 };
 
 export default function Dashboard() {
-  const [aum, setAum] = useState(23_242_500_000);
+  const [aum, setAum] = useState(27_451_875_000);
 
   const [assets, setAssets] = useState<Asset[]>([
     { name: "Bitcoin", symbol: "BTC", allocation: 30, price: 64500 },
@@ -29,7 +29,7 @@ export default function Dashboard() {
   ]);
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [chartPoints, setChartPoints] = useState([680, 682, 678, 685, 690, 687, 692]);
+  const [chartPoints, setChartPoints] = useState([880, 882, 878, 885, 890, 887, 892]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -110,7 +110,7 @@ export default function Dashboard() {
           ${aum.toLocaleString(undefined, { maximumFractionDigits: 0 })}
         </div>
 
-        <div className="syncText">Syncing balance… 70.64%</div>
+        <div className="syncText">Syncing balance… 83.42%</div>
 
         <div className="loadingWrapper">
           <div className="loadingBar" />
@@ -136,9 +136,9 @@ export default function Dashboard() {
         </Card>
 
         <Card title="Offshore Vault Holdings" glow>
-          <div>Swiss Private Bank — $18.6B</div>
-          <div>Singapore Custody Vault — $8.4B</div>
-          <div>Cayman Structured Trust — $6.9B</div>
+          <div>Swiss Private Bank — $24.9B</div>
+          <div>Singapore Custody Vault — $16.7B</div>
+          <div>Cayman Structured Trust — $13.9B</div>
         </Card>
 
         <Card title="Institutional Activity">

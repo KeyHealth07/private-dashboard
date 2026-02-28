@@ -18,7 +18,7 @@ type Transaction = {
 };
 
 export default function Dashboard() {
-  const [aum] = useState(18_750_000_000);
+  const [aum, setAum] = useState(23_242_500_000);
 
   const [assets, setAssets] = useState<Asset[]>([
     { name: "Bitcoin", symbol: "BTC", allocation: 30, price: 64500 },
@@ -29,10 +29,13 @@ export default function Dashboard() {
   ]);
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [chartPoints, setChartPoints] = useState([480, 482, 478, 485, 490, 487, 492]);
+  const [chartPoints, setChartPoints] = useState([680, 682, 678, 685, 690, 687, 692]);
 
   useEffect(() => {
     const interval = setInterval(() => {
+
+    setAum((prev) => prev + (Math.random() - 0.5) * 2_000_000);
+
       setAssets((prev) =>
         prev.map((a) => ({
           ...a,
@@ -104,10 +107,10 @@ export default function Dashboard() {
         <div className="aumLabel">Assets Under Management</div>
 
         <div className="goldShimmer">
-          ${aum.toLocaleString()}
+          ${aum.toLocaleString(undefined, { maximumFractionDigits: 0 })}
         </div>
 
-        <div className="syncText">Syncing balance… 56.98%</div>
+        <div className="syncText">Syncing balance… 70.64%</div>
 
         <div className="loadingWrapper">
           <div className="loadingBar" />
@@ -127,15 +130,15 @@ export default function Dashboard() {
           {assets.map((a) => (
             <Row key={a.symbol}
               left={<><div>{a.name}</div><div className="sub">{a.symbol}</div></>}
-              right={<><div>${a.price.toFixed(2)}</div><div className="sub">{a.allocation}%</div></>}
+              right={<><div>${a.price.toFixed(4)}</div><div className="sub">{a.allocation}%</div></>}
             />
           ))}
         </Card>
 
         <Card title="Offshore Vault Holdings" glow>
-          <div>Swiss Private Bank — $6.2B</div>
-          <div>Singapore Custody Vault — $4.8B</div>
-          <div>Cayman Structured Trust — $3.7B</div>
+          <div>Swiss Private Bank — $18.6B</div>
+          <div>Singapore Custody Vault — $8.4B</div>
+          <div>Cayman Structured Trust — $6.9B</div>
         </Card>
 
         <Card title="Institutional Activity">

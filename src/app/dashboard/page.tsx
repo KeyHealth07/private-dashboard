@@ -271,7 +271,7 @@ export default function Dashboard() {
           height: 100%;
           background: #b81313;
           position: relative;
-          animation: loading 1.5s linear infinite;
+          animation: loading 5.5s linear infinite;
         }
 
         .grid { display: grid; gap: 20px; }

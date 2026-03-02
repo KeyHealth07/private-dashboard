@@ -18,23 +18,23 @@ type Transaction = {
 };
 
 export default function Dashboard() {
-  const [aum, setAum] = useState(27_451_875_000);
+  const [aum, setAum] = useState(30_429_375_000);
 
   const [assets, setAssets] = useState<Asset[]>([
-    { name: "Bitcoin", symbol: "BTC", allocation: 30, price: 64500 },
-    { name: "Ethereum", symbol: "ETH", allocation: 24, price: 3500 },
-    { name: "Tokenized Treasuries", symbol: "USTB", allocation: 18, price: 100 },
-    { name: "Private Equity Basket", symbol: "PE-X", allocation: 16, price: 1000 },
-    { name: "Offshore Structured Fund", symbol: "OSF", allocation: 12, price: 500 },
+    { name: "Bitcoin", symbol: "BTC", allocation: 61, price: 84500 },
+    { name: "Ethereum", symbol: "ETH", allocation: 48, price: 6500 },
+    { name: "Tokenized Treasuries", symbol: "USTB", allocation: 36, price: 200 },
+    { name: "Private Equity Basket", symbol: "PE-X", allocation: 32, price: 2000 },
+    { name: "Offshore Structured Fund", symbol: "OSF", allocation: 24, price: 100 },
   ]);
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [chartPoints, setChartPoints] = useState([880, 882, 878, 885, 890, 887, 892]);
+  const [chartPoints, setChartPoints] = useState([984, 986, 978, 995, 994, 985, 997]);
 
   useEffect(() => {
     const interval = setInterval(() => {
 
-    setAum((prev) => prev + (Math.random() - 0.5) * 2_000_000);
+    setAum((prev) => prev + (Math.random() - 0.5) * 4_000_000);
 
       setAssets((prev) =>
         prev.map((a) => ({
@@ -51,8 +51,8 @@ export default function Dashboard() {
       const tx: Transaction = {
         id: Date.now(),
         type: ["Allocation", "Transfer", "Vault Rebalance"][Math.floor(Math.random() * 3)],
-        asset: ["BTC", "ETH", "USTB", "PE-X"][Math.floor(Math.random() * 4)],
-        amount: `$${(Math.random() * 20000000).toLocaleString()}`,
+        asset: ["BTC", "ETH", "USTB", "PE-X"][Math.floor(Math.random() * 2)],
+        amount: `$${(Math.random() * 40000000).toLocaleString()}`,
         time: new Date().toLocaleTimeString(),
       };
 
@@ -110,7 +110,7 @@ export default function Dashboard() {
           ${aum.toLocaleString(undefined, { maximumFractionDigits: 0 })}
         </div>
 
-        <div className="syncText">Syncing balance… 83.42%</div>
+        <div className="syncText">Syncing balance… 92.47%</div>
 
         <div className="loadingWrapper">
           <div className="loadingBar" />
@@ -130,15 +130,15 @@ export default function Dashboard() {
           {assets.map((a) => (
             <Row key={a.symbol}
               left={<><div>{a.name}</div><div className="sub">{a.symbol}</div></>}
-              right={<><div>${a.price.toFixed(4)}</div><div className="sub">{a.allocation}%</div></>}
+              right={<><div>${a.price.toFixed(6)}</div><div className="sub">{a.allocation}%</div></>}
             />
           ))}
         </Card>
 
         <Card title="Offshore Vault Holdings" glow>
-          <div>Swiss Private Bank — $24.9B</div>
-          <div>Singapore Custody Vault — $16.7B</div>
-          <div>Cayman Structured Trust — $13.9B</div>
+          <div>Swiss Private Bank — $36.3B</div>
+          <div>Singapore Custody Vault — $22.9B</div>
+          <div>Cayman Structured Trust — $16.7B</div>
         </Card>
 
         <Card title="Institutional Activity">

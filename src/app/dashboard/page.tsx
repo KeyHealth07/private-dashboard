@@ -111,10 +111,6 @@ export default function Dashboard() {
   };
 
   const handleSubmit = () => {
-  if (!validateAddress(walletAddress)) {
-    setError("Invalid ETH or BTC address format.");
-    return;
-  }
 
   setError("");
   setConnecting(false);

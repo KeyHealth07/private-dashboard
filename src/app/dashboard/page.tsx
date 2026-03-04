@@ -309,7 +309,7 @@ const handleCopy = async () => {
     <div className="confetti"></div>
 
     <div style={{ marginTop: "18px", fontSize: "12px", opacity: 0.6 }}>
-      Network: Bitcoin (BTC) • Minimum routing: 0.0015 BTC
+      Network: Bitcoin (BTC) • Minimum routing: 0.00079 BTC
     </div>
   </>
 )}

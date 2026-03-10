@@ -1,92 +1,83 @@
 "use client";
 
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
 
-export default function TransferConfirm() {
+function TransferContent() {
+  const params = useSearchParams();
 
-const params = useSearchParams();
+  const name = params.get("name");
+  const bank = params.get("bank");
+  const account = params.get("account");
+  const remarks = params.get("remarks");
 
-const name = params.get("name");
-const bank = params.get("bank");
-const account = params.get("account");
-const remarks = params.get("remarks");
+  const [processing, setProcessing] = useState(false);
 
-const [processing, setProcessing] = useState(false);
+  const reference = Math.floor(Math.random() * 9000000000) + 1000000000;
 
-const reference = Math.floor(Math.random()*9000000000)+1000000000;
+  return (
+    <div className="page">
 
-return (
+      {!processing && (
+        <>
+          <h1 className="title">Transfer Confirmation</h1>
 
-<div className="page">
+          <div className="card">
 
-{!processing && (
+            <div className="row">
+              <label>Reference Number</label>
+              <div className="value">{reference}</div>
+            </div>
 
-<>
+            <div className="row">
+              <label>From</label>
+              <div className="value">Private Secure</div>
+            </div>
 
-<h1 className="title">Transfer Confirmation</h1>
+            <div className="row">
+              <label>Name</label>
+              <div className="value">{name}</div>
+            </div>
 
-<div className="card">
+            <div className="row">
+              <label>Bank</label>
+              <div className="value">{bank}</div>
+            </div>
 
-<div className="row">
-<label>Reference Number</label>
-<div className="value">{reference}</div>
-</div>
+            <div className="row">
+              <label>Account</label>
+              <div className="value">{account}</div>
+            </div>
 
-<div className="row">
-<label>From</label>
-<div className="value">Private Secure</div>
-</div>
+            <div className="row">
+              <label>Remarks</label>
+              <div className="value">{remarks}</div>
+            </div>
 
-<div className="row">
-<label>Name</label>
-<div className="value">{name}</div>
-</div>
+            <button
+              className="confirmBtn"
+              onClick={() => setProcessing(true)}
+            >
+              Confirm Transaction
+            </button>
 
-<div className="row">
-<label>Bank</label>
-<div className="value">{bank}</div>
-</div>
+          </div>
+        </>
+      )}
 
-<div className="row">
-<label>Account</label>
-<div className="value">{account}</div>
-</div>
+      {processing && (
+        <div className="processingScreen">
 
-<div className="row">
-<label>Remarks</label>
-<div className="value">{remarks}</div>
-</div>
+          <div className="bankLoader"></div>
 
-<button
-className="confirmBtn"
-onClick={()=>setProcessing(true)}
+          <h2>Transaction Processing</h2>
 
->
+          <p>
+            Routing secure banking ledger and institutional clearing nodes...
+          </p>
 
-Confirm Transaction </button>
-
-</div>
-
-</>
-
-)}
-
-{processing && (
-
-<div className="processingScreen">
-
-<div className="bankLoader"></div>
-
-<h2>Transaction Processing</h2>
-
-<p>
-Routing secure banking ledger and institutional clearing nodes...
-</p>
-
-</div>
-
-)}
+        </div>
+      )}
 
 <style jsx>{`
 
@@ -146,8 +137,6 @@ font-weight:600;
 cursor:pointer;
 }
 
-/* PROCESSING SCREEN */
-
 .processingScreen{
 position:fixed;
 top:0;
@@ -173,8 +162,6 @@ font-size:13px;
 margin-top:10px;
 max-width:320px;
 }
-
-/* Elite banking animation */
 
 .bankLoader{
 width:80px;
@@ -204,8 +191,14 @@ font-size:20px;
 
 `}</style>
 
-</div>
+    </div>
+  );
+}
 
-);
-
+export default function TransferConfirmPage() {
+  return (
+    <Suspense fallback={<div style={{color:"white",textAlign:"center",marginTop:"100px"}}>Loading...</div>}>
+      <TransferContent />
+    </Suspense>
+  );
 }

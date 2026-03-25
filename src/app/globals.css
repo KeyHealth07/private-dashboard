@@ -269,3 +269,41 @@ button:hover {
     transform: translateY(0);
   }
 }
+
+
+.bankLogo{
+margin-bottom:20px;
+}
+
+.logoSvg{
+width:220px;
+}
+
+.logoText{
+fill:none;
+stroke:#d4af37;
+stroke-width:1;
+stroke-dasharray:300;
+stroke-dashoffset:300;
+animation:drawLogo 3s ease forwards, glow 2s infinite alternate;
+font-size:24px;
+font-family:Arial, sans-serif;
+font-weight:bold;
+}
+
+/* draw animation */
+@keyframes drawLogo{
+to{
+stroke-dashoffset:0;
+}
+}
+
+/* glow effect */
+@keyframes glow{
+from{
+stroke:#d4af37;
+}
+to{
+stroke:#f5e6a5;
+}
+}
